@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 rm -rf node_modules && echo "Removed ./node_modules"
 [ -d web ] && cd web && rm -rf node_modules && echo "Removed web/node_modules" && cd -
