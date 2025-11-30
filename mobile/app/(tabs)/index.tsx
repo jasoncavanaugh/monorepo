@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { Platform, StyleSheet } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
 import { HelloWave } from "@/components/hello-wave";
 import ParallaxScrollView from "@/components/parallax-scroll-view";
@@ -20,6 +20,9 @@ export default function HomeScreen() {
     >
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
+        <View className="p-16 bg-red-500">
+          <Text>Hi</Text>
+        </View>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
