@@ -8,6 +8,7 @@ const qc = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={qc}>
+      <div>Here yet again hahah</div>
       <AppInner />
     </QueryClientProvider>
   );
