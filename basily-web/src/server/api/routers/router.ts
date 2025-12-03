@@ -1,8 +1,8 @@
-import { BASE_COLORS, BaseColor } from "../../../utils/tailwind-colors";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
 import * as schema from "../../../db/schema";
-import { eq, and } from "drizzle-orm";
+import { BASE_COLORS, type BaseColor } from "../../../utils/tailwind-colors";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 /*
  * TYPES
@@ -120,7 +120,6 @@ export const router = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      //2.) And this one
       let day = await ctx.db.query.days.findFirst({
         where: (day, { and, eq }) =>
           and(
@@ -131,7 +130,6 @@ export const router = createTRPCRouter({
           ),
       });
       if (!day) {
-        //3.) And here too
         const newDay = await ctx.db
           .insert(schema.days)
           .values({
