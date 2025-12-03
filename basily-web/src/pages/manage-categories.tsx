@@ -1,11 +1,12 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useEffect, useState } from "react";
-import { Spinner } from "../components/Spinner";
 import { ProfileNav } from "../components/ProfileNav";
-import { ExpenseCategoryWithBaseColor } from "../server/api/routers/router";
+import { Spinner } from "../components/Spinner";
+import { type ExpenseCategoryWithBaseColor } from "../server/api/routers/router";
 import { api } from "../utils/api";
 import { cn } from "../utils/cn";
-import { BASE_COLORS, BaseColor } from "../utils/tailwind-colors";
 import { SPINNER_CLASSES } from "../utils/constants";
+import { BASE_COLORS, type BaseColor } from "../utils/tailwind-colors";
 import { TW_COLORS_MP } from "../utils/tailwindColorsMp";
 
 export default function ManageCategories() {
@@ -72,7 +73,7 @@ function ManageCategoriesDisplay({
   const api_ctx = api.useContext();
   const edit_category_mtn = api.router.edit_category.useMutation({
     onSuccess: () => {
-      api_ctx.router.get_categories.invalidate();
+      void api_ctx.router.get_categories.invalidate();
       //   set_selected_category_idx(0);
     },
   });

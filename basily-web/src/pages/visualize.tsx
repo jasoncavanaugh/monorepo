@@ -1,32 +1,31 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { subDays } from "date-fns";
-import { Dispatch, SetStateAction, memo, useEffect, useState } from "react";
-import { DateRange } from "react-day-picker";
-import { Spinner } from "../components/Spinner";
-import {
-  ExpenseCategoryWithBaseColor,
-  GetExpensesOverDateRangeRet,
-} from "../server/api/routers/router";
-import { cents_to_dollars_display } from "../utils/centsToDollarDisplay";
-import { cn } from "../utils/cn";
-import { BaseColor } from "../utils/tailwind-colors";
-import { TW_COLORS_TO_HEX_MP } from "../utils/tailwindColorsToHexMp";
-import { SIGN_IN_ROUTE, SPINNER_CLASSES } from "../utils/constants";
+import { type GetServerSideProps } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import Layout from "../components/Layout";
-import { getServerAuthSession } from "../server/auth";
-import { GetServerSideProps } from "next";
-import { use_expenses_over_date_range } from "../utils/useExpenses";
-import { date_to_dmy } from "./expenses";
-import { api } from "../utils/api";
-import { useCallback, useRef } from "react";
-import { UseExpensesOverDateRangeData } from "../utils/useExpenses";
-import { useWindowDimensions } from "../utils/useWindowDimensions";
+import { memo, useEffect, useState } from "react";
+import { type DateRange } from "react-day-picker";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { z } from "zod";
+import { DatePickerWithRange } from "../components/DatePickerWithRange";
+import Layout from "../components/Layout";
+import { Spinner } from "../components/Spinner";
+import {
+  type ExpenseCategoryWithBaseColor,
+  type GetExpensesOverDateRangeRet,
+} from "../server/api/routers/router";
+import { getServerAuthSession } from "../server/auth";
+import { api } from "../utils/api";
+import { cents_to_dollars_display } from "../utils/centsToDollarDisplay";
+import { cn } from "../utils/cn";
+import { SIGN_IN_ROUTE, SPINNER_CLASSES } from "../utils/constants";
+import { type BaseColor } from "../utils/tailwind-colors";
 import { breakpoints } from "../utils/tailwindBreakpoints";
 import { TW_COLORS_MP } from "../utils/tailwindColorsMp";
-import { DatePickerWithRange } from "../components/DatePickerWithRange";
-import { z } from "zod";
+import { TW_COLORS_TO_HEX_MP } from "../utils/tailwindColorsToHexMp";
+import { use_expenses_over_date_range, type UseExpensesOverDateRangeData } from "../utils/useExpenses";
+import { useWindowDimensions } from "../utils/useWindowDimensions";
+import { date_to_dmy } from "./expenses";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -91,6 +90,7 @@ const MemoizedPie = memo(
               if (!stuff) {
                 return null;
               }
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               const col = stuff.payload.color as BaseColor;
               return (
                 <div
@@ -146,6 +146,7 @@ const MemoizedPie = memo(
     return true;
   }
 );
+MemoizedPie.displayName = "MemoizedPie";
 
 const VISUALIZE_DATE_RANGE_LOCAL_STORAGE_KEY = "visualize_date_range" as const;
 const DateRangeSchema = z.object({
@@ -205,13 +206,10 @@ export default function Visualize() {
 
   const expense_data_qry = use_expenses_over_date_range(date_range);
   const categories_qry = api.router.get_categories.useQuery();
-  const [selected_categories, set_selected_categories] = useState<
-    Array<string>
-  >(categories_qry.data?.map((c) => c.id) ?? []);
 
   useEffect(() => {
     if (session.status === "unauthenticated") {
-      router.push(SIGN_IN_ROUTE);
+      void router.push(SIGN_IN_ROUTE);
     }
   }, [session.status]);
   if (session.status === "loading" || session.status === "unauthenticated") {
@@ -305,12 +303,13 @@ export function VisualizeContent({
             >
               {pie_chart_data
                 .sort((a, b) => (a.name < b.name ? -1 : 1))
-                .map((datum) => {
+                .map((datum, i) => {
                   const is_selected = selected_categories.includes(
                     datum.category_id
                   );
                   return (
                     <li
+                      key={i}
                       className={cn(
                         "flex items-center gap-3 bg-bulbasaur dark:bg-leblanc",
                         "rounded-lg font-bold shadow-sm shadow-slate-300 dark:shadow-leblanc",

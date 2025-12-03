@@ -1,20 +1,21 @@
 import * as RadixModal from "@radix-ui/react-dialog";
+import { type GetServerSideProps } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
+import { type DateRange } from "react-day-picker";
+import { z } from "zod";
+import { DatePickerWithRange } from "../components/DatePickerWithRange";
+import Layout from "../components/Layout";
+import { Spinner } from "../components/Spinner";
+import {
+  type Expense,
+  type ExpenseCategoryWithBaseColor,
+} from "../server/api/routers/router";
+import { getServerAuthSession } from "../server/auth";
 import { api } from "../utils/api";
 import { cents_to_dollars_display } from "../utils/centsToDollarDisplay";
 import { cn } from "../utils/cn";
-import { BASE_COLORS, BaseColor } from "../utils/tailwind-colors";
-import { TW_COLORS_MP } from "../utils/tailwindColorsMp";
-import { Spinner } from "../components/Spinner";
-import {
-  DMY,
-  ExpenseDataByDay,
-  process_days_with_expenses,
-  use_expenses_over_date_range,
-} from "../utils/useExpenses";
-import Layout from "../components/Layout";
 import {
   BUTTON_HOVER_CLASSES,
   RADIX_MODAL_CONTENT_CLASSES,
@@ -22,19 +23,17 @@ import {
   SIGN_IN_ROUTE,
   SPINNER_CLASSES,
 } from "../utils/constants";
-import { getServerAuthSession } from "../server/auth";
-import { GetServerSideProps } from "next";
-import {
-  DayWithExpenses,
-  Expense,
-  ExpenseCategoryWithBaseColor,
-} from "../server/api/routers/router";
-import { DatePickerWithRange } from "../components/DatePickerWithRange";
-import { DateRange } from "react-day-picker";
-import { get_category_ids_to_names } from "../utils/getCategoryIdsToNames";
 import { get_category_ids_to_colors } from "../utils/getCategoryIdsToColors";
+import { get_category_ids_to_names } from "../utils/getCategoryIdsToNames";
+import { BASE_COLORS, type BaseColor } from "../utils/tailwind-colors";
+import { TW_COLORS_MP } from "../utils/tailwindColorsMp";
+import {
+  type DMY,
+  type ExpenseDataByDay,
+  process_days_with_expenses,
+  use_expenses_over_date_range,
+} from "../utils/useExpenses";
 import { getDayName } from "./sign-in";
-import { z } from "zod";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -111,8 +110,9 @@ export default function Expenses() {
   }, []);
   useEffect(() => {
     if (session.status === "unauthenticated") {
-      router.push(SIGN_IN_ROUTE);
+      void router.push(SIGN_IN_ROUTE);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.status]);
   if (!client) {
     return undefined;
@@ -152,7 +152,7 @@ export default function Expenses() {
           expense_qry.data.days.length === 0 && (
             <div className="flex h-[95vh] items-center justify-center">
               <h1 className="italic text-slate-700 dark:text-white">
-                Click the '+' button to add a new expense.
+                Click the &apos;+&apos; button to add a new expense.
               </h1>
             </div>
           )}
@@ -168,7 +168,7 @@ export default function Expenses() {
           expense_qry.data.days.length > 0 && (
             <ChronologicalExpenseList
               invalidate_expenses_qry={() => {
-                api_utils.router.get_expenses_over_date_range.invalidate();
+                void api_utils.router.get_expenses_over_date_range.invalidate();
               }}
               expenses_by_day={process_days_with_expenses({
                 days: expense_qry.data.days,
@@ -188,7 +188,7 @@ export default function Expenses() {
             "lg:shadow-md lg:shadow-blue-300 lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-lg lg:hover:shadow-blue-300 lg:hover:brightness-110"
           )}
           on_create_success={() => {
-            api_utils.router.get_expenses_over_date_range.invalidate();
+            void api_utils.router.get_expenses_over_date_range.invalidate();
           }}
           month={today.getMonth() + 1}
           day={today.getDate()}
@@ -280,14 +280,16 @@ function ExpenseListForDay({
   category_id_to_name: Map<string, string>;
   invalidate_expenses_qry: () => void;
 }) {
-  let output = [];
+  const output = [];
   const category_id_to_expenses_for_day =
     day_with_expenses.category_id_to_expenses;
 
   const { month, day, year } = extract_mdy(day_with_expenses.date_display);
   for (const category_id of category_id_to_expenses_for_day.keys()) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const expense_list = category_id_to_expenses_for_day.get(category_id)!;
     const sum_of_expenses = expense_list.reduce((acc, e) => e.amount + acc, 0);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const category_color = category_id_to_color.get(category_id)!;
     const category_name = category_id_to_name.get(category_id);
     output.push(
@@ -454,8 +456,11 @@ function extract_date_fields(date_str: string) {
   }
   const split = date_str.trim().split("/");
   return {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     day: parseInt(split[1]!),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     month_idx: parseInt(split[0]!) - 1,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     year: parseInt(split[2]!),
   };
 }
@@ -500,7 +505,7 @@ function AddNewExpenseButtonAndModal({
       set_is_modal_open(false);
       on_create_success();
     },
-    onError: (err, data, ctx) => {
+    onError: (err, data) => {
       console.log(err, data);
       alert("error");
     },
@@ -595,6 +600,7 @@ function AddNewExpenseButtonAndModal({
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               handle_create_expense(expense_categories_qry.data!);
             }}
           >
