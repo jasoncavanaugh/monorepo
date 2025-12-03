@@ -1,14 +1,14 @@
+import { sql } from "drizzle-orm";
 import {
-  pgTable,
-  uniqueIndex,
   foreignKey,
+  integer,
+  pgTable,
   text,
   timestamp,
-  integer,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
 import { relations } from "drizzle-orm/relations";
-import { BaseColor } from "src/utils/tailwind-colors";
+import { type BaseColor } from "src/utils/tailwind-colors";
 
 export const expense_categories = pgTable("ExpenseCategory", {
   id: text()

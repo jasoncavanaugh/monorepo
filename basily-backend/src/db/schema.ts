@@ -1,16 +1,100 @@
-import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
+import { relations, sql } from "drizzle-orm";
+import { boolean, foreignKey, index, integer, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { BaseColor } from "../utils/types";
 
-export const posts = pgTable("post", {
+export const expense_categories = pgTable("expense_category", {
   id: text()
     .primaryKey()
     .notNull()
     .$defaultFn(() => crypto.randomUUID()),
-  name: text().notNull().default(""),
+  user_id: text("user_id").notNull(),
+  created_at: timestamp("created_at", { mode: "date", withTimezone: true })
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updated_at: timestamp("updated_at", { mode: "date", withTimezone: true })
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  color: text("color").notNull().$type<BaseColor>().default("pink"),
+  name: text().notNull(),
 });
 
+export const days = pgTable(
+  "day",
+  {
+    id: text()
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => crypto.randomUUID()),
+    user_id: text("user_id").notNull(),
+    created_at: timestamp("created_at", { mode: "date", withTimezone: true })
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    month: integer().notNull(),
+    day: integer().notNull(),
+    year: integer().notNull(),
+  },
+  (table) => [
+    uniqueIndex("day_user_id_month_day_year_key").using(
+      "btree",
+      table.user_id.asc().nullsLast().op("text_ops"),
+      table.month.asc().nullsLast().op("int4_ops"),
+      table.day.asc().nullsLast().op("int4_ops"),
+      table.year.asc().nullsLast().op("int4_ops")
+    ),
+    foreignKey({
+      columns: [table.user_id],
+      foreignColumns: [users.id],
+      name: "day_user_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+  ]
+);
+
+export const expenses = pgTable(
+  "expense",
+  {
+    id: text()
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => crypto.randomUUID()),
+    created_at: timestamp("created_at", { mode: "date", withTimezone: true })
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updated_at: timestamp("updated_at", { mode: "date", withTimezone: true })
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    amount: integer().notNull(),
+    user_id: text("user_id").notNull(),
+    category_id: text("category_id").notNull(),
+    day_id: text("day_id").notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.category_id],
+      foreignColumns: [expense_categories.id],
+      name: "expense_category_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    foreignKey({
+      columns: [table.day_id],
+      foreignColumns: [days.id],
+      name: "expense_day_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    foreignKey({
+      columns: [table.user_id],
+      foreignColumns: [users.id],
+      name: "expense_user_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+  ]
+);
 //From npx @better-auth/cli generate (see https://www.better-auth.com/docs/installation)
-export const user = pgTable("user", {
+export const users = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
@@ -23,7 +107,7 @@ export const user = pgTable("user", {
     .notNull(),
 });
 
-export const session = pgTable(
+export const sessions = pgTable(
   "session",
   {
     id: text("id").primaryKey(),
@@ -37,12 +121,12 @@ export const session = pgTable(
     userAgent: text("user_agent"),
     userId: text("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
   },
   (table) => [index("session_userId_idx").on(table.userId)],
 );
 
-export const account = pgTable(
+export const accounts = pgTable(
   "account",
   {
     id: text("id").primaryKey(),
@@ -50,7 +134,7 @@ export const account = pgTable(
     providerId: text("provider_id").notNull(),
     userId: text("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
     idToken: text("id_token"),
@@ -66,7 +150,7 @@ export const account = pgTable(
   (table) => [index("account_userId_idx").on(table.userId)],
 );
 
-export const verification = pgTable(
+export const verifications = pgTable(
   "verification",
   {
     id: text("id").primaryKey(),
@@ -82,21 +166,21 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const userRelations = relations(user, ({ many }) => ({
-  sessions: many(session),
-  accounts: many(account),
+export const userRelations = relations(users, ({ many }) => ({
+  sessions: many(sessions),
+  accounts: many(accounts),
 }));
 
-export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
-    fields: [session.userId],
-    references: [user.id],
+export const sessionRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
   }),
 }));
 
-export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, {
-    fields: [account.userId],
-    references: [user.id],
+export const accountRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
   }),
 }));
