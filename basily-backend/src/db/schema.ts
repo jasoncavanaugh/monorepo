@@ -1,5 +1,14 @@
 import { relations, sql } from "drizzle-orm";
-import { boolean, foreignKey, index, integer, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  foreignKey,
+  index,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 import { BaseColor } from "../utils/types";
 
 export const expense_categories = pgTable("expense_category", {
@@ -39,7 +48,7 @@ export const days = pgTable(
       table.user_id.asc().nullsLast().op("text_ops"),
       table.month.asc().nullsLast().op("int4_ops"),
       table.day.asc().nullsLast().op("int4_ops"),
-      table.year.asc().nullsLast().op("int4_ops")
+      table.year.asc().nullsLast().op("int4_ops"),
     ),
     foreignKey({
       columns: [table.user_id],
@@ -48,7 +57,7 @@ export const days = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("cascade"),
-  ]
+  ],
 );
 
 export const expenses = pgTable(
@@ -91,7 +100,7 @@ export const expenses = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("cascade"),
-  ]
+  ],
 );
 //From npx @better-auth/cli generate (see https://www.better-auth.com/docs/installation)
 export const users = pgTable("user", {
