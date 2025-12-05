@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useMutation } from "@tanstack/react-query";
-import { BASE_URL } from "./constants";
+import { BACKEND_URL } from "./constants";
 
 export function use_create_expense_mtn({
   on_success,
@@ -19,7 +19,7 @@ export function use_create_expense_mtn({
         year: number;
       };
     }) => {
-      const resp = await fetch(`${BASE_URL}/api/create_expense`, {
+      const resp = await fetch(`${BACKEND_URL}/api/create_expense`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

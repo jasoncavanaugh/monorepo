@@ -7,7 +7,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "dev": "bun run --hot --port 8080 src/index.ts",
+    "dev": "bun run --hot src/index.ts",
     "build": "bun build --target=bun --outfile=dist/server.js src",
     "start": "bun dist/server.js"
   },

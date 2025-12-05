@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { subYears } from "date-fns";
 import { create } from "zustand";
-import { BASE_URL } from "./constants";
+import { BACKEND_URL } from "./constants";
 import {
   type DayWithExpenses,
   type Expense,
@@ -60,7 +60,7 @@ export function use_expenses_over_date_range(
   return useQuery({
     queryKey: ["/api/get_expenses_over_date_range", api_from_year, api_to_year],
     queryFn: async () => {
-      const resp = await fetch(`${BASE_URL}/api/get_expenses_over_date_range`, {
+      const resp = await fetch(`${BACKEND_URL}/api/get_expenses_over_date_range`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

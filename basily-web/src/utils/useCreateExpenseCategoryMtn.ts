@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useMutation } from "@tanstack/react-query";
-import { BASE_URL } from "./constants";
+import { BACKEND_URL } from "./constants";
 import { type BaseColor } from "./tailwind-colors";
 import { type ExpenseCategory } from "./types";
 
@@ -11,7 +11,7 @@ export function use_create_expense_category_mtn({
 }) {
   return useMutation({
     mutationFn: async (input: { name: string; color: BaseColor }) => {
-      const resp = await fetch(`${BASE_URL}/api/create_expense_category`, {
+      const resp = await fetch(`${BACKEND_URL}/api/create_expense_category`, {
         method: "POST",
         credentials: "include",
         body: JSON.stringify({

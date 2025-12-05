@@ -22,7 +22,7 @@ const app = new Hono<{
 app.use(
   "/api/*",
   cors({
-    origin: [`https://${env.ALLOWED_ORIGINS}`, "http://localhost:8080", "http://localhost:5173", "http://localhost:3000"], 
+    origin: [`https://${env.ALLOWED_ORIGINS}`, "http://localhost:8080", "http://localhost:5173", "http://localhost:3001"], 
     // ^ Access-Control-Allow-Origin: <page_origin_1>, <page_origin_2>
     allowHeaders: ["X-Custom-Header", "Upgrade-Insecure-Requests", "Content-Type"],
     // ^ Access-Control-Allow-Headers: X-Custom-Header, Upgrade-Insecure-Requests, Content-Type

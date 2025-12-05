@@ -5,7 +5,6 @@ import { type DateRange } from "react-day-picker";
 import { DatePickerWithRange } from "src/components/DatePickerWithRange";
 import Layout from "src/components/Layout";
 import { Spinner } from "src/components/Spinner";
-import { auth_client } from "src/utils/auth-client";
 import { cents_to_dollars_display } from "src/utils/centsToDollarDisplay";
 import {
   BUTTON_HOVER_CLASSES,
@@ -26,6 +25,7 @@ import { use_create_expense_category_mtn } from "src/utils/useCreateExpenseCateg
 import { use_create_expense_mtn } from "src/utils/useCreateExpenseMtn";
 import { use_delete_expense_mutn } from "src/utils/useDeleteExpenseMtn";
 import { use_expense_categories_qry } from "src/utils/useExpenseCategoriesQry";
+import { use_is_authed_or_redirect } from "src/utils/useIsAuthedOrRedirect";
 import { z } from "zod";
 import { cn } from "../utils/cn";
 import {
@@ -102,15 +102,17 @@ export default function Expenses() {
   React.useEffect(() => {
     set_client(true);
   }, []);
-  const session_qry = auth_client.useSession();
-  React.useEffect(() => {
-    const is_authed =
-      session_qry.data && session_qry.data.session && session_qry.data.user;
-    if (!is_authed) {
-      void router.push(SIGN_IN_ROUTE);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session_qry.isPending]);
+
+  const session_qry = use_is_authed_or_redirect({ redirect_if: "unauthorized", redirect_url: SIGN_IN_ROUTE });
+  // const session_qry = auth_client.useSession();
+  // React.useEffect(() => {
+  //   const is_authed =
+  //     session_qry.data && session_qry.data.session && session_qry.data.user;
+  //   if (!is_authed) {
+  //     void router.push(SIGN_IN_ROUTE);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [session_qry.isPending, session_qry.isRefetching]);
 
   if (!client) {
     return undefined;

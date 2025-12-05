@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useMutation } from "@tanstack/react-query";
-import { BASE_URL } from "./constants";
+import { BACKEND_URL } from "./constants";
 
 export function use_delete_expense_mutn({
   on_success,
@@ -11,7 +11,7 @@ export function use_delete_expense_mutn({
 }) {
   return useMutation({
     mutationFn: async ({ expense_id }: { expense_id: string }) => {
-      const resp = await fetch(`${BASE_URL}/api/delete_expense/${expense_id}`, {
+      const resp = await fetch(`${BACKEND_URL}/api/delete_expense/${expense_id}`, {
         method: "DELETE",
         credentials: "include",
       });

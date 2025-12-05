@@ -1,5 +1,4 @@
 import * as RadixModal from "@radix-ui/react-dialog";
-import { useRouter } from "next/router";
 import React, { type ReactNode } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { Logo } from "src/components/Logo";
@@ -11,6 +10,7 @@ import { cn } from "src/utils/cn";
 import {
   BUTTON_HOVER_CLASSES,
   EXPENSES_ROUTE,
+  FRONTEND_URL,
   RADIX_MODAL_CONTENT_CLASSES,
   RADIX_MODAL_OVERLAY_CLASSES,
   SPINNER_CLASSES
@@ -19,6 +19,7 @@ import { BASE_COLORS, type BaseColor } from "src/utils/tailwind-colors";
 import { breakpoints } from "src/utils/tailwindBreakpoints";
 import { TW_COLORS_MP } from "src/utils/tailwindColorsMp";
 import { TW_COLORS_TO_HEX_MP } from "src/utils/tailwindColorsToHexMp";
+import { use_is_authed_or_redirect } from "src/utils/useIsAuthedOrRedirect";
 import { useWindowDimensions } from "src/utils/useWindowDimensions";
 import { Fab, is_valid_amount, is_valid_date } from "./expenses";
 
@@ -33,33 +34,8 @@ type DayWithExpensesLocal = {
   >;
 };
 
-// export const getServerSideProps: GetServerSideProps = async (ctx) => {
-//   const session = await getServerAuthSession(ctx);
-//   return {
-//     props: { session },
-//   };
-// };
 export default function SignIn() {
-  const session_qry = auth_client.useSession();
-  // const session = useSession();
-  const router = useRouter();
-  React.useEffect(() => {
-    const is_authed =
-      session_qry.data && session_qry.data.session && session_qry.data.user;
-    if (is_authed) {
-      void router.push(EXPENSES_ROUTE);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session_qry.isPending]);
-
-  // return <div>Sign in</div>;
-
-  // useEffect(() => {
-  //   if (session.status === "authenticated") {
-  //     router.push(EXPENSES_ROUTE);
-  //   }
-  // }, [session.status]);
-
+  const session_qry = use_is_authed_or_redirect({ redirect_if: "authorized", redirect_url: EXPENSES_ROUTE });
   const is_authed =
     session_qry.data && session_qry.data.session && session_qry.data.user;
   if (session_qry.isPending || is_authed) {
@@ -81,8 +57,8 @@ export default function SignIn() {
           onClick={() =>
             void auth_client.signIn.social({
               provider: "github",
-              callbackURL: `/expenses`,
-              errorCallbackURL: `/sign-in`,
+              callbackURL: `${FRONTEND_URL}/expenses`, 
+              errorCallbackURL: `${FRONTEND_URL}/sign-in`,
             })
           }
         >

@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { subDays } from "date-fns";
-import { useRouter } from "next/router";
 import React from "react";
 import { type DateRange } from "react-day-picker";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { DatePickerWithRange } from "src/components/DatePickerWithRange";
 import Layout from "src/components/Layout";
-import { auth_client } from "src/utils/auth-client";
 import { type ExpenseCategoryWithBaseColor, type GetExpensesOverDateRangeRet } from "src/utils/types";
 import { use_expense_categories_qry } from "src/utils/useExpenseCategoriesQry";
 import { use_expenses_over_date_range, type UseExpensesOverDateRangeData } from "src/utils/useExpenses";
+import { use_is_authed_or_redirect } from "src/utils/useIsAuthedOrRedirect";
 import { useWindowDimensions } from "src/utils/useWindowDimensions";
 import { z } from "zod";
 import { Spinner } from "../components/Spinner";
@@ -169,8 +168,6 @@ function get_initial_date_range(): DateRange {
 }
 
 export default function Visualize() {
-  const session_qry = auth_client.useSession();
-  const router = useRouter();
   const [date, set_date] = React.useState<DateRange | undefined>(
     get_initial_date_range(),
   );
@@ -194,17 +191,7 @@ export default function Visualize() {
 
   const expense_data_qry = use_expenses_over_date_range(date_range);
   const categories_qry = use_expense_categories_qry();
-  // const expense_data_qry = use_expenses_over_date_range(date_range);
-  // const categories_qry = api.router.get_categories.useQuery();
-
-  React.useEffect(() => {
-    const is_authed =
-      session_qry.data && session_qry.data.session && session_qry.data.user;
-    if (!is_authed) {
-      void router.push(SIGN_IN_ROUTE);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session_qry.isPending]);
+  const session_qry = use_is_authed_or_redirect({ redirect_if: "unauthorized", redirect_url: SIGN_IN_ROUTE });
 
   const is_authed =
     session_qry.data && session_qry.data.session && session_qry.data.user;
