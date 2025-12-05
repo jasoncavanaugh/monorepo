@@ -10,8 +10,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "lint": "next lint",
-    "start": "next start",
-    "tailwind-colors-generate": "npx ts-node ./src/utils/tailwind-colors-generate.ts && npx prettier --write ./src/utils/tailwindColorsMp.ts"
+    "start": "next start"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.1",
