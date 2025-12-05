@@ -2,7 +2,6 @@ packages:
   - basily-web
   - basily-backend
   - basily-mobile
-  - vite-project
 
 catalogs:
   # Can be referenced through "catalog:react-19"
