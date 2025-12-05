@@ -33,3 +33,5 @@ export const RADIX_MODAL_CONTENT_CLASSES = cn(
   "data-[state=open]:slide-in-from-left-1/2",
   "data-[state=open]:slide-in-from-top-[48%]",
 );
+
+export const BASE_URL = "http://localhost:3000" as const;

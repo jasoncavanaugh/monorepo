@@ -1,4 +1,4 @@
-import { signOut, useSession } from "next-auth/react";
+import * as RadixPopover from "@radix-ui/react-popover";
 import {
   BarChart2Icon,
   ChevronDown,
@@ -6,19 +6,20 @@ import {
   LogOut,
   PieChartIcon,
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
-import * as RadixPopover from "@radix-ui/react-popover";
-import { cn } from "../utils/cn";
-import { ThemeButton } from "./ThemeButton";
 import Link from "next/link";
+import { auth_client } from "src/utils/auth-client";
+import { cn } from "../utils/cn";
 import {
   EXPENSES_ROUTE,
   MANAGE_CATEGORIES_ROUTE,
   VISUALIZE_ROUTE,
 } from "../utils/constants";
+import { ThemeButton } from "./ThemeButton";
 
 export function ProfileNav({ to_categories }: { to_categories: boolean }) {
-  const session = useSession();
+  const session = auth_client.useSession();
   return (
     <RadixPopover.Root>
       <RadixPopover.Trigger asChild>

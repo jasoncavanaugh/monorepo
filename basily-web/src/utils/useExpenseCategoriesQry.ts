@@ -1,12 +1,15 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useQuery } from "@tanstack/react-query";
+import { BASE_URL } from "./constants";
 import { type ExpenseCategory } from "./types";
 
 export function use_expense_categories_qry() {
   return useQuery({
     queryKey: [],
     queryFn: async () => {
-      const resp = await fetch("/api/expense_categories");
+      const resp = await fetch(`${BASE_URL}/api/expense_categories`, {
+        credentials: "include",
+      });
       if (!resp.ok) {
         throw new Error();
       }
