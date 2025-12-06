@@ -2,7 +2,8 @@ import * as RadixModal from "@radix-ui/react-dialog";
 import React, { type ReactNode } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { Logo } from "src/components/Logo";
-import { Spinner } from "src/components/Spinner";
+import { Button } from "src/components/shadcn/Button";
+import { Spinner, SPINNER_CLASSES } from "src/components/Spinner";
 import { ThemeButton } from "src/components/ThemeButton";
 import { use_is_authed_or_redirect } from "src/hooks/useIsAuthedOrRedirect";
 import { useWindowDimensions } from "src/hooks/useWindowDimensions";
@@ -15,7 +16,6 @@ import {
   FRONTEND_URL,
   RADIX_MODAL_CONTENT_CLASSES,
   RADIX_MODAL_OVERLAY_CLASSES,
-  SPINNER_CLASSES
 } from "src/utils/constants";
 import { BASE_COLORS, breakpoints, TW_COLORS_MP, TW_COLORS_TO_HEX_MP, type BaseColor } from "src/utils/tailwind-stuff";
 import { Fab, is_valid_amount, is_valid_date } from "./expenses";
@@ -33,6 +33,7 @@ type DayWithExpensesLocal = {
 
 export default function SignIn() {
   const session_qry = use_is_authed_or_redirect({ redirect_if: "authorized", redirect_url: EXPENSES_ROUTE });
+  const [sign_in_loading, set_sign_in_loading] = React.useState(false);
   const is_authed =
     session_qry.data && session_qry.data.session && session_qry.data.user;
   if (session_qry.isPending || is_authed) {
@@ -49,18 +50,27 @@ export default function SignIn() {
         <p className="text-base text-slate-700 dark:text-white md:text-2xl md:text-lg">
           A minimalistic expense tracker
         </p>
-        <button
-          className="rounded-full bg-squirtle px-3 py-1 text-sm font-semibold text-white shadow-sm shadow-blue-300 hover:brightness-110 dark:bg-rengar md:px-6 md:py-2 md:text-3xl md:text-lg"
-          onClick={() =>
-            void auth_client.signIn.social({
-              provider: "github",
-              callbackURL: `${FRONTEND_URL}/expenses`, 
-              errorCallbackURL: `${FRONTEND_URL}/sign-in`,
-            })
+        <Button
+          className="rounded-full bg-squirtle px-3 py-1 text-sm font-semibold text-white shadow-sm shadow-blue-300 hover:brightness-110 w-20 md:w-24 dark:bg-rengar md:px-6 md:py-2 md:text-3xl md:text-lg"
+          onClick={() => {
+              void auth_client.signIn.social({
+                provider: "github",
+                callbackURL: `${FRONTEND_URL}/expenses`, 
+                errorCallbackURL: `${FRONTEND_URL}/sign-in`,
+              }, {
+                onRequest: () => {
+                  set_sign_in_loading(true);
+                },
+                onError: () => {
+                  alert("Something went wrong");
+                  set_sign_in_loading(false);
+                }
+              });
+            }
           }
         >
-          Sign In
-        </button>
+          {sign_in_loading ? <Spinner className="h-4 w-4 border-2 border-solid border-white lg:h-5 lg:w-5" /> : "Sign In"}
+        </Button>
       </div>
       <BasilPreview />
     </div>
@@ -105,9 +115,7 @@ function BasilPreviewClientSide() {
     }
     const cur = JSON.stringify(expenses_by_day);
     const stored = localStorage.getItem("expenses_by_day");
-    console.log("cur", cur, "stored", stored);
     if (cur !== stored) {
-      console.log("running");
       localStorage.setItem("expenses_by_day", JSON.stringify(expenses_by_day));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

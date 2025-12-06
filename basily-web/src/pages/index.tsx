@@ -2,11 +2,10 @@ import { type NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import { auth_client } from "src/utils/auth-client";
-import { Spinner } from "../components/Spinner";
+import { Spinner, SPINNER_CLASSES } from "../components/Spinner";
 import {
   EXPENSES_ROUTE,
   SIGN_IN_ROUTE,
-  SPINNER_CLASSES,
 } from "../utils/constants";
 
 const Home: NextPage = () => {

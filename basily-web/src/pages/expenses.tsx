@@ -4,7 +4,7 @@ import React, { type ReactNode } from "react";
 import { type DateRange } from "react-day-picker";
 import { DatePickerWithRange } from "src/components/DatePickerWithRange";
 import Layout from "src/components/Layout";
-import { Spinner } from "src/components/Spinner";
+import { Spinner, SPINNER_CLASSES } from "src/components/Spinner";
 import { use_create_expense_category_mtn } from "src/hooks/useCreateExpenseCategoryMtn";
 import { use_create_expense_mtn } from "src/hooks/useCreateExpenseMtn";
 import { use_delete_expense_mutn } from "src/hooks/useDeleteExpenseMtn";
@@ -17,7 +17,6 @@ import {
   RADIX_MODAL_CONTENT_CLASSES,
   RADIX_MODAL_OVERLAY_CLASSES,
   SIGN_IN_ROUTE,
-  SPINNER_CLASSES,
 } from "src/utils/constants";
 import { get_category_ids_to_colors } from "src/utils/getCategoryIdsToColors";
 import { get_category_ids_to_names } from "src/utils/getCategoryIdsToNames";

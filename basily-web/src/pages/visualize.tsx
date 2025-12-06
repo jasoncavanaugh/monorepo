@@ -12,10 +12,10 @@ import { useWindowDimensions } from "src/hooks/useWindowDimensions";
 import { type BaseColor, breakpoints, TW_COLORS_MP, TW_COLORS_TO_HEX_MP } from "src/utils/tailwind-stuff";
 import { type ExpenseCategoryWithBaseColor, type GetExpensesOverDateRangeRet } from "src/utils/types";
 import { z } from "zod";
-import { Spinner } from "../components/Spinner";
+import { Spinner, SPINNER_CLASSES } from "../components/Spinner";
 import { cents_to_dollars_display } from "../utils/centsToDollarDisplay";
 import { cn } from "../utils/cn";
-import { SIGN_IN_ROUTE, SPINNER_CLASSES } from "../utils/constants";
+import { SIGN_IN_ROUTE } from "../utils/constants";
 import { date_to_dmy } from "./expenses";
 
 const MemoizedPie = React.memo(

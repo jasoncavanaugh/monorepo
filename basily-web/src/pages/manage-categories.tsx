@@ -6,8 +6,7 @@ import { cn } from "src/utils/cn";
 import { BASE_COLORS, TW_COLORS_MP, type BaseColor } from "src/utils/tailwind-stuff";
 import { type ExpenseCategory } from "src/utils/types";
 import { ProfileNav } from "../components/ProfileNav";
-import { Spinner } from "../components/Spinner";
-import { SPINNER_CLASSES } from "../utils/constants";
+import { Spinner, SPINNER_CLASSES } from "../components/Spinner";
 
 export default function ManageCategories() {
   const categories_qry = use_expense_categories_qry();
